@@ -1,0 +1,42 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: "develop"
+    assignees:
+      - "ukwhatn"
+    reviewers:
+      - "ukwhatn"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: "develop"
+    versioning-strategy: increase-if-necessary
+    assignees:
+      - "ukwhatn"
+    reviewers:
+      - "ukwhatn"
+
+  - package-ecosystem: "docker"
+    directory: "/db"
+    schedule:
+      interval: "daily"
+    target-branch: "develop"
+    assignees:
+      - "ukwhatn"
+    reviewers:
+      - "ukwhatn"
+
+  - package-ecosystem: "docker"
+    directory: "/discord"
+    schedule:
+      interval: "daily"
+    target-branch: "develop"
+    assignees:
+      - "ukwhatn"
+    reviewers:
+      - "ukwhatn"
