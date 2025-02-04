@@ -41,5 +41,6 @@ bot.load_extension("cogs.Admin")
 bot.load_extension("cogs.CogManager")
 
 bot.load_extension("cogs.GroupList")
+bot.load_extension("cogs.ParticipantInfo")
 
 bot.run(bot_config.TOKEN)

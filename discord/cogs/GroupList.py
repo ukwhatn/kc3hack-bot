@@ -15,7 +15,11 @@ class GroupListInput(discord.ui.Modal):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-        self.add_item(discord.ui.InputText(label="グループリスト", style=discord.InputTextStyle.long))
+        self.add_item(
+            discord.ui.InputText(
+                label="グループリスト", style=discord.InputTextStyle.long
+            )
+        )
 
     async def callback(self, interaction: discord.Interaction):
         # レスポンスを遅延
@@ -43,7 +47,9 @@ class GroupListInput(discord.ui.Modal):
                     db.add(Group(**group))
 
                 for group in update_groups:
-                    _g = db.execute(select(Group).where(Group.id == group["id"])).scalar()
+                    _g = db.execute(
+                        select(Group).where(Group.id == group["id"])
+                    ).scalar()
                     if _g:
                         _g.name = group["name"]
                         _g.short_name = group["short_name"]
@@ -52,15 +58,17 @@ class GroupListInput(discord.ui.Modal):
 
                 db.commit()
             except Exception as e:
-                await interaction.followup.send(f"エラーが発生しました: {e}", ephemeral=True)
+                await interaction.followup.send(
+                    f"エラーが発生しました: {e}", ephemeral=True
+                )
                 raise e
 
         await interaction.followup.send("保存しました", ephemeral=True)
 
 
 class GroupList(discord.Cog):
-    def __init__(self):
-        self.bot = None
+    def __init__(self, bot):
+        self.bot = bot
         self.logger = logging.getLogger(__name__)
 
     @slash_command(name="list_groups", description="グループリストを表示します")
@@ -70,7 +78,9 @@ class GroupList(discord.Cog):
 
         # server adminのみ実行を許可
         if ctx.author.guild_permissions.administrator is False:
-            await ctx.interaction.followup.send("このコマンドはサーバー管理者のみ実行可能です", ephemeral=True)
+            await ctx.interaction.followup.send(
+                "このコマンドはサーバー管理者のみ実行可能です", ephemeral=True
+            )
             return
 
         with get_db() as db:
@@ -80,7 +90,10 @@ class GroupList(discord.Cog):
         # header: id, name, short_name, is_disabled
         csv_header = "id,name,short_name,is_disabled"
         csv_body = "\n".join(
-            [f"{group.id},{group.name},{group.short_name},{1 if group.is_disabled else 0}" for group in groups]
+            [
+                f"{group.id},{group.name},{group.short_name},{1 if group.is_disabled else 0}"
+                for group in groups
+            ]
         )
 
         csv_data = f"{csv_header}\n{csv_body}"
@@ -91,18 +104,20 @@ class GroupList(discord.Cog):
             file=discord.File(
                 filename=f"group_list_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
                 fp=io.BytesIO(csv_data.encode("utf-8")),
-            )
+            ),
         )
 
     @slash_command(name="input_groups", description="グループリストを入力します")
     async def input_groups(self, ctx: discord.commands.context.ApplicationContext):
         # server adminのみ実行を許可
         if ctx.author.guild_permissions.administrator is False:
-            await ctx.interaction.followup.send("このコマンドはサーバー管理者のみ実行可能です", ephemeral=True)
+            await ctx.interaction.followup.send(
+                "このコマンドはサーバー管理者のみ実行可能です", ephemeral=True
+            )
             return
 
         await ctx.send_modal(GroupListInput(title="グループリスト入力"))
 
 
 def setup(bot):
-    bot.add_cog(GroupList())
+    bot.add_cog(GroupList(bot))

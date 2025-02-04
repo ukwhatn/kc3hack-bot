@@ -34,7 +34,9 @@ class Group(Base):
 
     short_name: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    is_disabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=sql_false)
+    is_disabled: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=sql_false
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=text("now()")
@@ -57,10 +59,14 @@ class Participant(Base):
     last_name: Mapped[str] = mapped_column(String(255), nullable=False)
     first_name: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    group_id: Mapped[int] = mapped_column(Integer, ForeignKey("groups.id"), nullable=False)
+    group_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("groups.id"), nullable=False
+    )
     group: Mapped[Group] = relationship("Group", back_populates="participants")
 
     github_user_name: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    discord_user_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=text("now()")
@@ -80,7 +86,9 @@ class VoiceChatLog(Base):
 
     channel_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
 
-    start_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    start_time: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
 
     end_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
