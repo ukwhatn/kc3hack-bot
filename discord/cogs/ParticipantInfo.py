@@ -245,6 +245,9 @@ class ParticipantInfo(commands.Cog):
                 "フォーマット",
                 default="[{team}]{last_name} {first_name}_{group_short_name}",
             ),
+            target_role: discord.Option(
+                discord.SlashCommandOptionType.role, "対象ロール", default=None
+            ),
     ):
         # Adminに限定
         if not ctx.author.guild_permissions.administrator:
@@ -263,6 +266,9 @@ class ParticipantInfo(commands.Cog):
                 member = ctx.guild.get_member(participant.discord_user_id)
 
                 if not member:
+                    continue
+
+                if target_role and target_role not in member.roles:
                     continue
 
                 # ロールから"チーム"で始まるものを取得し、その後の文字列を取得
