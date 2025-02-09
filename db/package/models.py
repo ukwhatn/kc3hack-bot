@@ -82,15 +82,15 @@ class VoiceChatLog(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
-
     channel_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+
+    team_id: Mapped[str] = mapped_column(String(255), nullable=False)
 
     start_time: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )
 
-    end_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    end_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=text("now()")
@@ -106,7 +106,7 @@ class TextChatLog(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    team_id: Mapped[str] = mapped_column(String(255), nullable=False)
 
     channel_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     message_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
