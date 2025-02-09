@@ -1,3 +1,4 @@
+import io
 from datetime import datetime
 
 import discord
@@ -83,6 +84,7 @@ class Logger(commands.Cog):
     @slash_command(name="list_voice_chat_logs", description="ボイスチャットログを表示します")
     @commands.has_permissions(administrator=True)
     async def list_voice_chat_logs(self, ctx):
+        await ctx.response.defer(ephemeral=True)
         with get_db() as db:
             logs = db.execute(select(VoiceChatLog)).scalars().all()
 
@@ -102,11 +104,39 @@ class Logger(commands.Cog):
             message += f"チーム{team_id}: {total_time}秒\n"
         message += "```"
 
-        await ctx.respond(message, ephemeral=True)
+        await ctx.followup.send(message, ephemeral=True)
+
+    @slash_command(name='output_text_csv', description='テキストチャットログをCSV形式で出力します')
+    @commands.has_permissions(administrator=True)
+    async def output_text_csv(self, ctx):
+        await ctx.response.defer(ephemeral=True)
+
+        with get_db() as db:
+            logs = db.execute(select(TextChatLog)).scalars().all()
+
+        csv_header = "team_id,channel_id,message_id,created_at"
+        csv_body = "\n".join(
+            [
+                f"{log.team_id},{log.channel_id},{log.message_id},{log.created_at}"
+                for log in logs
+            ]
+        )
+
+        # メッセージ作成
+        await ctx.followup.send(
+            "テキストチャットログ",
+            file=discord.File(
+                fp=io.BytesIO(f"{csv_header}\n{csv_body}".encode('utf-8')),
+                filename="text_chat_logs.csv"
+            ),
+            ephemeral=True
+        )
 
     @slash_command(name="list_text_chat_logs", description="テキストチャットログを表示します")
     @commands.has_permissions(administrator=True)
     async def list_text_chat_logs(self, ctx):
+        await ctx.response.defer(ephemeral=True)
+
         with get_db() as db:
             logs = db.execute(select(TextChatLog)).scalars().all()
 
@@ -126,7 +156,33 @@ class Logger(commands.Cog):
             message += f"チーム{team_id}: {total_messages}メッセージ\n"
         message += "```"
 
-        await ctx.respond(message, ephemeral=True)
+        await ctx.followup.send(message, ephemeral=True)
+
+    @slash_command(name="output_voice_csv", description="ボイスチャットログをCSV形式で出力します")
+    @commands.has_permissions(administrator=True)
+    async def output_voice_csv(self, ctx):
+        await ctx.response.defer(ephemeral=True)
+
+        with get_db() as db:
+            logs = db.execute(select(VoiceChatLog)).scalars().all()
+
+        csv_header = "team_id,channel_id,start_time,end_time"
+        csv_body = "\n".join(
+            [
+                f"{log.team_id},{log.channel_id},{log.start_time},{log.end_time}"
+                for log in logs
+            ]
+        )
+
+        # メッセージ作成
+        await ctx.followup.send(
+            "ボイスチャットログ",
+            file=discord.File(
+                fp=io.BytesIO(f"{csv_header}\n{csv_body}".encode('utf-8')),
+                filename="voice_chat_logs.csv"
+            ),
+            ephemeral=True
+        )
 
 
 def setup(bot):
