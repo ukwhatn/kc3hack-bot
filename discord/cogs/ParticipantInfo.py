@@ -271,6 +271,10 @@ class ParticipantInfo(commands.Cog):
                 if target_role and target_role not in member.roles:
                     continue
 
+                # admin権限持ちはニックネームを変更しない
+                if member.guild_permissions.administrator:
+                    continue
+
                 # ロールから"チーム"で始まるものを取得し、その後の文字列を取得
                 team = "?"
                 for role in member.roles:
