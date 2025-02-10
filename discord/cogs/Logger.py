@@ -91,6 +91,8 @@ class Logger(commands.Cog):
         # チームごとに合計時間を計算
         team_logs = {}
         for log in logs:
+            if log.end_time is None:
+                continue
             if log.team_id not in team_logs:
                 team_logs[log.team_id] = 0
             team_logs[log.team_id] += (log.end_time - log.start_time).seconds
